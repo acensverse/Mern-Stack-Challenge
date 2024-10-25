@@ -11,7 +11,7 @@
   ],
   "routes": [
     {
-      "src": "/transactions",
+      "src": "/(.*)",
       "dest": "/api/app.js"
     }
   ]
