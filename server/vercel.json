@@ -12,7 +12,7 @@
   "routes": [
     {
       "src": "/transactions",
-      "dest": "src/app.js"
+      "dest": "/api/app.js"
     }
   ]
 }
