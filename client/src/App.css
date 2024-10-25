@@ -1,0 +1,19 @@
+body {
+  padding: 2rem;
+  background-color: #edf6f6;
+}
+
+input::placeholder {
+  color: black;
+  font-weight: 500;
+}
+
+td { 
+  border: black solid 2px;
+  padding: 0.2rem;
+}
+
+Transaction {
+  padding: 4rem;
+
+}
