@@ -2,14 +2,18 @@
   "version": 2,
   "builds": [
     {
-      "src": "./src/app.js",
+      "src": "server/src/index.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "./src/(.*)",
-      "dest": "./src/app.js"
+      "src": "/api/(.*)",
+      "dest": "server/src/index.js"
     }
-  ]
+  ],
+  "env": {
+    "MONGODB_URI": "@mongodb_uri",
+    "CORS_ORIGIN": "@cors_origin"    
+  }
 }
