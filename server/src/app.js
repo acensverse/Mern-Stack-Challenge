@@ -250,4 +250,6 @@ async function getPieChartData(month) {
   ]);
 }
 
-export { app }
+export default (req, res) => {
+  app(req, res);
+};
