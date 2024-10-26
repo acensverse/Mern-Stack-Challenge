@@ -61,33 +61,39 @@ app.get("/transactions", async (req, res) => {
 
 app.get("/statistics", async (req, res) => {
   const { month } = req.query;
+
+  // Validate the month parameter
+  if (!month || isNaN(month) || month < 1 || month > 12) {
+    return res.status(400).json({ message: "Invalid or missing 'month' parameter" });
+  }
+
   try {
-    const totalSaleAmount = await Product.aggregate([
-      { $match: { dateOfSale: { $regex: `-${month}-` } } },
-      { $group: { _id: null, totalAmount: { $sum: "$price" } } },
+    // Calculate total sale amount and sold items
+    const statistics = await Product.aggregate([
+      {
+        $match: {
+          dateOfSale: { $regex: `-(${month})-` }, // Match items by month
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalAmount: { $sum: { $cond: [{ $eq: ["$sold", true] }, "$price", 0] } }, // Total amount from sold items
+          soldItems: { $sum: { $cond: [{ $eq: ["$sold", true] }, 1, 0] } }, // Count of sold items
+          unsoldItems: { $sum: { $cond: [{ $eq: ["$sold", false] }, 1, 0] } }, // Count of unsold items
+        },
+      },
     ]);
 
-    const soldItems = await Product.countDocuments({
-      dateOfSale: { $regex: `-${month}-` },
-      isSold: true,
-    });
-
-    const unsoldItems = await Product.countDocuments({
-      dateOfSale: { $regex: `-${month}-` },
-      isSold: false,
-    });
-
     res.status(200).json({
-      totalSaleAmount: totalSaleAmount[0]?.totalAmount || 0,
-      soldItems,
-      unsoldItems,
+      totalSaleAmount: statistics[0]?.totalAmount || 0,
+      soldItems: statistics[0]?.soldItems || 0,
+      unsoldItems: statistics[0]?.unsoldItems || 0,
       message: "Statistics fetched successfully.",
     });
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({ message: "Error fetching statistics", error: error.message });
+    res.status(500).json({ message: "Error fetching statistics", error: error.message });
   }
 });
 
